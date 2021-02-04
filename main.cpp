@@ -1,16 +1,15 @@
-/* hello.cpp */
+
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <algorithm>
 using namespace std;
 
 class PontoDeInteresse
 {
-private:
+public:
     int codigo;
     int valorTuristico;
-
-public:
     PontoDeInteresse(int codigo, int valorTuristico)
     {
         this->codigo = codigo;
@@ -20,17 +19,52 @@ public:
 
 class Trecho
 {
-private:
+public:
     int trechoUm;
     int trechoDois;
     int custo;
-
-public:
     Trecho(int trechoUm, int trechoDois, int custo)
     {
         this->trechoUm = trechoUm;
         this->trechoDois = trechoDois;
         this->custo = custo;
+    }
+};
+
+class Configuracoes
+{
+public:
+    void CalculaRota(vector<Trecho> vetorTrechos, vector<PontoDeInteresse> vetorPontosDeInteresse)
+    {
+        vector<Trecho> resultado;
+        for (int j = 0; j < vetorPontosDeInteresse.size(); j++)
+        {
+            int codigoPontoAtual = vetorPontosDeInteresse.at(j).codigo;
+            vector<Trecho> trechosComCaminhoParaCodigoAtual;
+            for (int i = 0; i < vetorTrechos.size(); i++)
+            {
+                Trecho trechoAtual = vetorTrechos.at(i);
+                if (trechoAtual.trechoDois == codigoPontoAtual || trechoAtual.trechoUm == codigoPontoAtual)
+                {
+                    trechosComCaminhoParaCodigoAtual.push_back(trechoAtual);
+                }
+            }
+
+            Trecho trechoComMenorCusto = trechosComCaminhoParaCodigoAtual.at(0);
+            for (int i = 0; i < trechosComCaminhoParaCodigoAtual.size(); i++)
+            {
+                Trecho trechoAtual = trechosComCaminhoParaCodigoAtual.at(i);
+                if (trechoAtual.custo < trechoComMenorCusto.custo)
+                {
+                    trechoComMenorCusto = trechoAtual;
+                }
+            }
+
+            resultado.push_back(trechoComMenorCusto);
+
+        }
+
+       cout << "\n \n O resultado . size é: "<< resultado.size();
     }
 };
 
@@ -99,6 +133,7 @@ int main()
     leEntradaPrincipal(quantidadePontosDeInteresse, quantidadeTrechosPossiveis);
     vetorPontosDeInteresse = leEntradaPontosDeInteresse(quantidadePontosDeInteresse);
     vetorTrechos = leEntradaTrechos(quantidadeTrechosPossiveis);
-
+    Configuracoes configuracoes = Configuracoes();
+    configuracoes.CalculaRota(vetorTrechos, vetorPontosDeInteresse);
     return 0;
 }
