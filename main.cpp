@@ -23,10 +23,10 @@ class Trecho
 private:
     int trechoUm;
     int trechoDois;
-    double custo;
+    int custo;
 
 public:
-    Trecho(int trechoUm, int trechoDois, double custo)
+    Trecho(int trechoUm, int trechoDois, int custo)
     {
         this->trechoUm = trechoUm;
         this->trechoDois = trechoDois;
@@ -82,7 +82,7 @@ vector<Trecho> leEntradaTrechos(int quantidadeDeTrechosPossiveis)
 
         int trechoUm = stoi(temp.at(0));
         int trechoDois = stoi(temp.at(1));
-        double custo = stoi(temp.at(2));
+        int custo = stoi(temp.at(2));
 
         Trecho trechoAtual = Trecho(trechoUm, trechoDois, custo);
         vetorTrechos.push_back(trechoAtual);
