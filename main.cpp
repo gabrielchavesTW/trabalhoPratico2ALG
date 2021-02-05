@@ -38,13 +38,13 @@ public:
 class Configuracoes
 {
 public:
-    vector<Trecho> obterTrechosParaPonto(vector<Trecho> vetorTrechos, PontoDeInteresse ponto)
+    vector<Trecho*> obterTrechosParaPonto(vector<Trecho> &vetorTrechos, PontoDeInteresse ponto)
     {
-        vector<Trecho> trechosComCaminhoParaPontoAtual;
+        vector<Trecho*> trechosComCaminhoParaPontoAtual;
         for (int i = 0; i < vetorTrechos.size(); i++)
         {
-            Trecho trechoAtual = vetorTrechos.at(i);
-            if (trechoAtual.trechoDois == ponto.codigo || trechoAtual.trechoUm == ponto.codigo)
+            Trecho *trechoAtual = &vetorTrechos.at(i);
+            if (trechoAtual->trechoDois == ponto.codigo || trechoAtual->trechoUm == ponto.codigo)
             {
                 trechosComCaminhoParaPontoAtual.push_back(trechoAtual);
             }
@@ -53,19 +53,19 @@ public:
         return trechosComCaminhoParaPontoAtual;
     }
 
-    Trecho obterTrechoComMenorCustoEMaiorAtratividade(vector<Trecho> vetorTrechos)
+    Trecho* obterTrechoComMenorCustoEMaiorAtratividade(vector<Trecho*> vetorTrechos)
     {
-        Trecho melhorTrecho = vetorTrechos.at(0);
+        Trecho *melhorTrecho = vetorTrechos.at(0);
         for (int i = 1; i < vetorTrechos.size(); i++)
         {
-            Trecho trechoAtual = vetorTrechos.at(i);
-            if (trechoAtual.custo < melhorTrecho.custo)
+            Trecho *trechoAtual = vetorTrechos.at(i);
+            if ((melhorTrecho->disponivel == false && trechoAtual->disponivel == true) || (trechoAtual->disponivel == true && trechoAtual->custo < melhorTrecho->custo))
             {
                 melhorTrecho = trechoAtual;
             }
-            else if (trechoAtual.custo == melhorTrecho.custo &&
-                     ((trechoAtual.trechoUmAtratividade + trechoAtual.trechoDoisAtratividade) >
-                      (melhorTrecho.trechoUmAtratividade + melhorTrecho.trechoDoisAtratividade)))
+            else if (trechoAtual->custo == melhorTrecho->custo &&
+                     ((trechoAtual->trechoUmAtratividade + trechoAtual->trechoDoisAtratividade) >
+                      (melhorTrecho->trechoUmAtratividade + melhorTrecho->trechoDoisAtratividade)))
             {
                 melhorTrecho = trechoAtual;
             }
@@ -87,7 +87,7 @@ public:
 
         return pontoAtual;
     }
-    
+
     void calculaRota(vector<Trecho> vetorTrechos, vector<PontoDeInteresse> vetorPontosDeInteresse)
     {
         vector<Trecho> resultado;
@@ -95,11 +95,11 @@ public:
         while (i > 0)
         {
             PontoDeInteresse *pontoDeMenorInteresse = acharPontoDeInteresseComMenorAtratividade(vetorPontosDeInteresse);
-            vector<Trecho> trechosComCaminhoParaPontoAtual = obterTrechosParaPonto(vetorTrechos, *pontoDeMenorInteresse);
-            resultado.push_back(obterTrechoComMenorCustoEMaiorAtratividade(trechosComCaminhoParaPontoAtual));
-
-
+            vector<Trecho*> trechosComCaminhoParaPontoAtual = obterTrechosParaPonto(vetorTrechos, *pontoDeMenorInteresse);
+            Trecho *melhorTrecho = obterTrechoComMenorCustoEMaiorAtratividade(trechosComCaminhoParaPontoAtual);
+            melhorTrecho->disponivel = false;        
             pontoDeMenorInteresse->disponivel = false;
+            resultado.push_back(*melhorTrecho);
             i--;
         }
 
