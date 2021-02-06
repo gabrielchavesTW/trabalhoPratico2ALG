@@ -12,6 +12,7 @@
         "iterator": "cpp",
         "string_view": "cpp",
         "unordered_map": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "map": "cpp"
     }
 }

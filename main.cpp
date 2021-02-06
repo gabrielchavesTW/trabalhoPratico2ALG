@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <map>
 using namespace std;
 
 class PontoDeInteresse
@@ -35,6 +36,28 @@ public:
         this->disponivel = true;
     }
 };
+
+class Resultado
+{
+public:
+    int custoTotal;
+    int atratividadeAgregada;
+    vector<Trecho> trechosResultado;
+    Resultado(){
+        this->custoTotal = 0;
+        this->atratividadeAgregada = 0;
+    }
+    void adicionarCusto(int custo){
+        this->custoTotal +=custo;
+    }
+    void adicionarAtratividade(int atratividadeTrecho){
+        this->atratividadeAgregada+=atratividadeTrecho;
+    }
+    void adicionarTrecho(Trecho trecho){
+        this->trechosResultado.push_back(trecho);
+    }
+};
+
 class Configuracoes
 {
 public:
@@ -88,9 +111,23 @@ public:
         return pontoAtual;
     }
 
+    void imprimirResultado(Resultado resultado, vector<int> qtdTrechosPorPonto){
+        cout << "\n" << resultado.custoTotal << " " << resultado.atratividadeAgregada << "\n";
+        for(int i=0; i< qtdTrechosPorPonto.size(); i++){
+            cout << qtdTrechosPorPonto.at(i) << " ";
+        }
+        cout << "\n";
+        for(int i = 0; i< resultado.trechosResultado.size(); i++){
+            Trecho trechoAtual = resultado.trechosResultado.at(i);
+            cout << trechoAtual.trechoUm << " " << trechoAtual.trechoDois << " " << trechoAtual.custo << "\n";
+        }
+    }
+
     void calculaRota(vector<Trecho> vetorTrechos, vector<PontoDeInteresse> vetorPontosDeInteresse)
     {
-        vector<Trecho> resultado;
+        Resultado resultado;
+        vector<int> qtdTrechosPorPonto(vetorPontosDeInteresse.size(), 0);
+
         int i = vetorPontosDeInteresse.size() - 1;
         while (i > 0)
         {
@@ -99,11 +136,16 @@ public:
             Trecho *melhorTrecho = obterTrechoComMenorCustoEMaiorAtratividade(trechosComCaminhoParaPontoAtual);
             melhorTrecho->disponivel = false;        
             pontoDeMenorInteresse->disponivel = false;
-            resultado.push_back(*melhorTrecho);
+
+            resultado.adicionarCusto(melhorTrecho->custo);
+            resultado.adicionarAtratividade((melhorTrecho->trechoUmAtratividade + melhorTrecho->trechoDoisAtratividade));
+            resultado.adicionarTrecho(*melhorTrecho);
+            qtdTrechosPorPonto.at(melhorTrecho->trechoUm) +=1;
+            qtdTrechosPorPonto.at(melhorTrecho->trechoDois) +=1;
             i--;
         }
 
-        cout << "\n \n O resultado . size é: " << resultado.size();
+        imprimirResultado(resultado, qtdTrechosPorPonto);
     }
 };
 
