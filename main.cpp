@@ -43,17 +43,21 @@ public:
     int custoTotal;
     int atratividadeAgregada;
     vector<Trecho> trechosResultado;
-    Resultado(){
+    Resultado()
+    {
         this->custoTotal = 0;
         this->atratividadeAgregada = 0;
     }
-    void adicionarCusto(int custo){
-        this->custoTotal +=custo;
+    void adicionarCusto(int custo)
+    {
+        this->custoTotal += custo;
     }
-    void adicionarAtratividade(int atratividadeTrecho){
-        this->atratividadeAgregada+=atratividadeTrecho;
+    void adicionarAtratividade(int atratividadeTrecho)
+    {
+        this->atratividadeAgregada += atratividadeTrecho;
     }
-    void adicionarTrecho(Trecho trecho){
+    void adicionarTrecho(Trecho trecho)
+    {
         this->trechosResultado.push_back(trecho);
     }
 };
@@ -61,9 +65,9 @@ public:
 class Configuracoes
 {
 public:
-    vector<Trecho*> obterTrechosParaPonto(vector<Trecho> &vetorTrechos, PontoDeInteresse ponto)
+    vector<Trecho *> obterTrechosParaPonto(vector<Trecho> &vetorTrechos, PontoDeInteresse ponto)
     {
-        vector<Trecho*> trechosComCaminhoParaPontoAtual;
+        vector<Trecho *> trechosComCaminhoParaPontoAtual;
         for (int i = 0; i < vetorTrechos.size(); i++)
         {
             Trecho *trechoAtual = &vetorTrechos.at(i);
@@ -76,7 +80,7 @@ public:
         return trechosComCaminhoParaPontoAtual;
     }
 
-    Trecho* obterTrechoComMenorCustoEMaiorAtratividade(vector<Trecho*> vetorTrechos)
+    Trecho *obterTrechoComMenorCustoEMaiorAtratividade(vector<Trecho *> vetorTrechos)
     {
         Trecho *melhorTrecho = vetorTrechos.at(0);
         for (int i = 1; i < vetorTrechos.size(); i++)
@@ -97,12 +101,12 @@ public:
         return melhorTrecho;
     }
 
-    PontoDeInteresse* acharPontoDeInteresseComMenorAtratividade(vector<PontoDeInteresse> &vetorPontosDeInteresse)
+    PontoDeInteresse *acharPontoDeInteresseComMenorAtratividade(vector<PontoDeInteresse> &vetorPontosDeInteresse)
     {
         PontoDeInteresse *pontoAtual = &vetorPontosDeInteresse.at(0);
         for (int i = 1; i < vetorPontosDeInteresse.size(); i++)
         {
-            if ((pontoAtual->valorTuristico > vetorPontosDeInteresse.at(i).valorTuristico && vetorPontosDeInteresse.at(i).disponivel == true) || (pontoAtual->disponivel == false  && vetorPontosDeInteresse.at(i).disponivel == true))
+            if ((pontoAtual->valorTuristico > vetorPontosDeInteresse.at(i).valorTuristico && vetorPontosDeInteresse.at(i).disponivel == true) || (pontoAtual->disponivel == false && vetorPontosDeInteresse.at(i).disponivel == true))
             {
                 pontoAtual = &vetorPontosDeInteresse.at(i);
             }
@@ -111,13 +115,30 @@ public:
         return pontoAtual;
     }
 
-    void imprimirResultado(Resultado resultado, vector<int> qtdTrechosPorPonto){
-        cout << "\n" << resultado.custoTotal << " " << resultado.atratividadeAgregada << "\n";
-        for(int i=0; i< qtdTrechosPorPonto.size(); i++){
+    PontoDeInteresse *acharUltimoPonto(vector<PontoDeInteresse> &vetorPontosDeInteresse, vector<int> qtdTrechosPorPonto, PontoDeInteresse *melhorPonto)
+    {
+        PontoDeInteresse *ultimoPonto = melhorPonto;
+        for (int i = 0; i < qtdTrechosPorPonto.size(); i++)
+        {
+            if(qtdTrechosPorPonto.at(i) == 0){
+                ultimoPonto = &vetorPontosDeInteresse.at(i);
+            }
+        }
+
+        return ultimoPonto;
+    }
+
+    void imprimirResultado(Resultado resultado, vector<int> qtdTrechosPorPonto)
+    {
+        cout << "\n"
+             << resultado.custoTotal << " " << resultado.atratividadeAgregada << "\n";
+        for (int i = 0; i < qtdTrechosPorPonto.size(); i++)
+        {
             cout << qtdTrechosPorPonto.at(i) << " ";
         }
         cout << "\n";
-        for(int i = 0; i< resultado.trechosResultado.size(); i++){
+        for (int i = 0; i < resultado.trechosResultado.size(); i++)
+        {
             Trecho trechoAtual = resultado.trechosResultado.at(i);
             cout << trechoAtual.trechoUm << " " << trechoAtual.trechoDois << " " << trechoAtual.custo << "\n";
         }
@@ -131,17 +152,22 @@ public:
         int i = vetorPontosDeInteresse.size() - 1;
         while (i > 0)
         {
-            PontoDeInteresse *pontoDeMenorInteresse = acharPontoDeInteresseComMenorAtratividade(vetorPontosDeInteresse);
-            vector<Trecho*> trechosComCaminhoParaPontoAtual = obterTrechosParaPonto(vetorTrechos, *pontoDeMenorInteresse);
+            PontoDeInteresse *pontoDeMenorInteresse = acharPontoDeInteresseComMenorAtratividade(vetorPontosDeInteresse);;
+            if (i == 1)
+            {
+                pontoDeMenorInteresse = acharUltimoPonto(vetorPontosDeInteresse, qtdTrechosPorPonto, pontoDeMenorInteresse);
+            }
+
+            vector<Trecho *> trechosComCaminhoParaPontoAtual = obterTrechosParaPonto(vetorTrechos, *pontoDeMenorInteresse);
             Trecho *melhorTrecho = obterTrechoComMenorCustoEMaiorAtratividade(trechosComCaminhoParaPontoAtual);
-            melhorTrecho->disponivel = false;        
+            melhorTrecho->disponivel = false;
             pontoDeMenorInteresse->disponivel = false;
 
             resultado.adicionarCusto(melhorTrecho->custo);
             resultado.adicionarAtratividade((melhorTrecho->trechoUmAtratividade + melhorTrecho->trechoDoisAtratividade));
             resultado.adicionarTrecho(*melhorTrecho);
-            qtdTrechosPorPonto.at(melhorTrecho->trechoUm) +=1;
-            qtdTrechosPorPonto.at(melhorTrecho->trechoDois) +=1;
+            qtdTrechosPorPonto.at(melhorTrecho->trechoUm) += 1;
+            qtdTrechosPorPonto.at(melhorTrecho->trechoDois) += 1;
             i--;
         }
 
