@@ -8,7 +8,7 @@
 # 	VAR=conteudo
 # e eh chamada atraves do comando $(VAR)
 
-CC=g++ # compilador, troque para gcc se preferir utilizar C
+CC=g++ -std=c++11# compilador, troque para gcc se preferir utilizar C
 CFLAGS=-Wall -Wextra # compiler flags, troque o que quiser, exceto bibliotecas externas
 EXEC=./tp02 # nome do executavel que sera gerado, nao troque
 TMPOUT=tp02.testresult
