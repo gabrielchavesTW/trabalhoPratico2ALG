@@ -130,8 +130,7 @@ public:
 
     void imprimirResultado(Resultado resultado, vector<int> qtdTrechosPorPonto)
     {
-        cout << "\n"
-             << resultado.custoTotal << " " << resultado.atratividadeAgregada << "\n";
+        cout << resultado.custoTotal << " " << resultado.atratividadeAgregada << "\n";
         for (int i = 0; i < qtdTrechosPorPonto.size(); i++)
         {
             cout << qtdTrechosPorPonto.at(i) << " ";
