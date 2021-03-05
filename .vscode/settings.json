@@ -13,6 +13,8 @@
         "string_view": "cpp",
         "unordered_map": "cpp",
         "algorithm": "cpp",
-        "map": "cpp"
+        "map": "cpp",
+        "deque": "cpp",
+        "list": "cpp"
     }
 }
