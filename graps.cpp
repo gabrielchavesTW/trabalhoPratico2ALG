@@ -102,21 +102,12 @@ int main()
 {
     // initialize edges as per the above diagram
     vector<Edge> edges;
-    edges.push_back(Edge(1, 2));
-    edges.push_back(Edge(1, 3));
-    edges.push_back(Edge(1, 4));
-    edges.push_back(Edge(2, 5));
-    edges.push_back(Edge(2, 6));
-    edges.push_back(Edge(5, 9));
-    edges.push_back(Edge(5, 10));
-    edges.push_back(Edge(4, 7));
-    edges.push_back(Edge(4, 8));
-    edges.push_back(Edge(7, 11));
-    edges.push_back(Edge(7, 12));
-    edges.push_back(Edge(6, 10));
+    edges.push_back(Edge(2, 4));
+    edges.push_back(Edge(2, 3));
+    edges.push_back(Edge(4, 3));
 
     // total number of nodes in the graph
-    int N = 13;
+    int N = 5;
 
     // build a graph from the given edges
     Graph graph(edges, N);
