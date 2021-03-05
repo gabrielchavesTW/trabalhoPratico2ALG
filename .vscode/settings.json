@@ -15,6 +15,7 @@
         "algorithm": "cpp",
         "map": "cpp",
         "deque": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "__locale": "cpp"
     }
 }
