@@ -3,28 +3,6 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "name": "Debug Graph",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceRoot}/graps",
-            "preLaunchTask": "task de grafos",
-            "internalConsoleOptions": "openOnSessionStart",
-            "logging": {
-                "moduleLoad": false,
-                "programOutput": true,
-                "trace": false
-            },
-            "showDisplayString": false,
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceRoot}",
-            "environment": [],
-            "externalConsole": true, // set true to enable keyboard input
-            "osx": {
-                "MIMode": "lldb"
-            }
-        },
-        {
             "name": "Debug C++",
             "type": "cppdbg",
             "request": "launch",

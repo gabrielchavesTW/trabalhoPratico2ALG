@@ -3,116 +3,18 @@
 #include <vector>
 #include <sstream>
 #include <map>
-#include <list>
-#include <limits.h>
-#include <queue>
+#include "grafo.h"
 using namespace std;
-
-class Edge
-{
-public:
-    int src, dest;
-    Edge(int src, int dest)
-    {
-        this->src = src;
-        this->dest = dest;
-    }
-};
-
-// A class to represent a graph object
-class Graph
-{
-public:
-    // a vector of vectors to represent an adjacency list
-    vector<vector<int> > adjList;
-
-    // Graph Constructor
-    Graph(vector<Edge> edges, int N)
-    {
-        // resize the vector to hold `N` elements of type `vector<int>`
-        adjList.resize(N);
-
-        // add edges to the undirected graph
-        for (int i = 0; i < edges.size(); i++)
-        {
-            Edge edgeAtual = edges.at(i);
-            adjList[edgeAtual.src].push_back(edgeAtual.dest);
-            adjList[edgeAtual.dest].push_back(edgeAtual.src);
-        }
-    }
-};
-
-// Node to store vertex and its parent info in BFS
-class Node
-{
-public:
-    int v, parent;
-    Node(int v, int parent)
-    {
-        this->v = v;
-        this->parent = parent;
-    }
-};
-
-// Perform BFS on the graph starting from vertex `src` and
-// return true if a cycle is found in the graph
-bool BFS(Graph const &graph, int src, int N)
-{
-    // to keep track of whether a vertex is discovered or not
-    vector<bool> discovered(N);
-
-    // mark the source vertex as discovered
-    discovered[src] = true;
-
-    // create a queue for doing BFS and
-    // enqueue source vertex
-    queue<Node> q;
-    q.push(Node(src, -1));
-
-    // loop till queue is empty
-    while (!q.empty())
-    {
-        // dequeue front node and print it
-        Node node = q.front();
-        q.pop();
-
-        for (int i = 0; i < graph.adjList[node.v].size(); i++)
-        {
-            int u = graph.adjList[node.v].at(i);
-            if (!discovered[u])
-            {
-                // mark it as discovered
-                discovered[u] = true;
-
-                // construct the queue node containing info
-                // about vertex and enqueue it
-                q.push(Node(u, node.v));
-            }
-
-            // `u` is discovered, and `u` is not a parent
-            else if (u != node.parent)
-            {
-                // we found a cross-edge, i.e., the cycle is found
-                return true;
-            }
-        }
-    }
-
-    // no cross-edges were found in the graph
-    return false;
-}
 
 class PontoDeInteresse
 {
 public:
     int codigo;
     int valorTuristico;
-    bool disponivel;
     PontoDeInteresse(int codigo, int valorTuristico)
     {
         this->codigo = codigo;
         this->valorTuristico = valorTuristico;
-        this->disponivel = true;
     }
 };
 
@@ -122,13 +24,13 @@ public:
     int trechoOrigem;
     int trechoDestino;
     int custo;
-    bool disponivel;
+    int atratividadeAgregada;
     Trecho(int trechoOrigem, int trechoDestino, int custo)
     {
         this->trechoOrigem = trechoOrigem;
         this->trechoDestino = trechoDestino;
         this->custo = custo;
-        this->disponivel = true;
+        this->atratividadeAgregada = 0;
     }
 };
 
@@ -136,59 +38,95 @@ class Configuracoes
 {
 public:
     vector<Trecho> resultado;
+    int custoTotal = 0;
+    int atratividadeAgregada = 0;
+    int quantidadePontosDeInteresse;
     void imprimirResultado()
     {
-        int custoTotal = 0;
-        int atratividadeAgregada = 0;
-        for (int i = 0; i < resultado.size(); i++)
-        {
-            custoTotal += resultado.at(i).custo;
-        }
+        cout << custoTotal << " " << atratividadeAgregada << "\n";
 
-        cout << custoTotal << " " << atratividadeAgregada;
+        for(int i = 0; i < resultado.size(); i++){
+            cout << resultado.at(i).trechoOrigem << " " << resultado.at(i).trechoDestino << "\n";
+        }
     }
 
-    bool novoTrechoNaoOcasionaUmCiclo(int trechoOrigem, int trechoDestino)
+    bool novoTrechoOcasionaUmCiclo(int trechoOrigem, int trechoDestino)
     {
-        vector<Edge> edges;
-        edges.push_back(Edge(trechoOrigem, trechoDestino));
+        Graph grafo(quantidadePontosDeInteresse);
+        grafo.addEdge(trechoOrigem, trechoDestino);
         for (int i = 0; i < resultado.size(); i++)
         {
             int src = resultado.at(i).trechoOrigem;
             int dest = resultado.at(i).trechoDestino;
-            edges.push_back(Edge(src, dest));
+            grafo.addEdge(src,dest);
         }
 
-        // total number of nodes in the graph
-        int N = 10;
+        return grafo.isCyclic();
+    }
 
-        // build a graph from the given edges
-        Graph grafo = Graph(edges, N);
+    vector<Trecho> removerTrecho(Trecho trecho, vector<Trecho> vetorTrechos){
+        for(int i = 0; i<vetorTrechos.size(); i++){
+            if(vetorTrechos.at(i).trechoDestino == trecho.trechoDestino && vetorTrechos.at(i).trechoOrigem == trecho.trechoOrigem){
+                vetorTrechos.erase(vetorTrechos.begin() + i);
+            }
+        }
 
-        bool grafoTemCiclo = (BFS(grafo, 1, N));
-        cout << grafoTemCiclo;
-        return !(grafoTemCiclo);
+        return vetorTrechos;
     }
 
     void calculaRota(vector<Trecho> vetorTrechos, vector<PontoDeInteresse> vetorPontosDeInteresse)
     {
-        int tamanhoResultado = vetorPontosDeInteresse.size() - 1;
-        int i = 0;
         do
         {
-            Trecho trechoAtual = vetorTrechos.at(i);
+            Trecho trechoAtual = acharMelhorTrechoDisponivel(vetorTrechos, vetorPontosDeInteresse);
 
             if (resultado.size() == 0)
             {
                 resultado.push_back(trechoAtual);
+                custoTotal +=trechoAtual.custo;
+                atratividadeAgregada +=trechoAtual.atratividadeAgregada;
             }
-            else if (novoTrechoNaoOcasionaUmCiclo(trechoAtual.trechoOrigem, trechoAtual.trechoDestino))
+            else if (!novoTrechoOcasionaUmCiclo(trechoAtual.trechoOrigem, trechoAtual.trechoDestino))
             {
                 resultado.push_back(trechoAtual);
+                custoTotal +=trechoAtual.custo;
+                atratividadeAgregada +=trechoAtual.atratividadeAgregada;
             }
-            i++;
-            //vetorTrechos.erase(vetorTrechos.begin() + i);
-        } while (i <= tamanhoResultado);
+
+            vetorTrechos = removerTrecho(trechoAtual, vetorTrechos);
+
+        } while (vetorTrechos.size() > 0);
+    }
+
+    int acharAtratividadeTrecho(int trechoOrigem, int trechoDestino, vector<PontoDeInteresse> vetorPontosDeInteresse){
+        int atratividade = 0;
+        for(int i =0; i<vetorPontosDeInteresse.size(); i ++){
+            PontoDeInteresse pontoAtual = vetorPontosDeInteresse.at(i);
+            if(pontoAtual.codigo == trechoOrigem || pontoAtual.codigo == trechoDestino){
+                atratividade += pontoAtual.valorTuristico;
+            }
+        }
+
+        return atratividade;
+    }
+
+    Trecho acharMelhorTrechoDisponivel(vector<Trecho> vetorTrechos, vector<PontoDeInteresse> vetorPontosDeInteresse){
+        Trecho melhorTrecho = vetorTrechos.at(0);
+        melhorTrecho.atratividadeAgregada = acharAtratividadeTrecho(melhorTrecho.trechoOrigem, melhorTrecho.trechoDestino, vetorPontosDeInteresse);
+        for(int i =1; i < vetorTrechos.size(); i ++){
+            Trecho trechoAtual = vetorTrechos.at(i);
+            trechoAtual.atratividadeAgregada = acharAtratividadeTrecho(trechoAtual.trechoOrigem, trechoAtual.trechoDestino, vetorPontosDeInteresse);
+
+            if(trechoAtual.custo < melhorTrecho.custo){
+                melhorTrecho = trechoAtual;
+            } else if(trechoAtual.custo == melhorTrecho.custo){
+                if(trechoAtual.atratividadeAgregada > melhorTrecho.atratividadeAgregada){
+                    melhorTrecho = trechoAtual;
+                }
+            }
+        }
+        
+        return melhorTrecho;
     }
 };
 
@@ -263,10 +201,10 @@ int main()
     vetorPontosDeInteresse = leEntradaPontosDeInteresse(quantidadePontosDeInteresse);
     vetorTrechos = leEntradaTrechos(quantidadeTrechosPossiveis);
 
-    //Ordena o grafo pelo peso das arestas assim como o algoritmo de kruskal
     sort(vetorTrechos.begin(), vetorTrechos.end(), comparaCustoDosTrechos);
 
     Configuracoes configuracoes = Configuracoes();
+    configuracoes.quantidadePontosDeInteresse = vetorPontosDeInteresse.size();    
     configuracoes.calculaRota(vetorTrechos, vetorPontosDeInteresse);
     configuracoes.imprimirResultado();
     return 0;
