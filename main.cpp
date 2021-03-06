@@ -34,7 +34,7 @@ public:
 
         for (int i = 0; i < resultado.size(); i++)
         {
-            cout << resultado.at(i).trechoOrigem << " " << resultado.at(i).trechoDestino << "\n";
+            cout << resultado.at(i).trechoOrigem << " " << resultado.at(i).trechoDestino << " " << resultado.at(i).custo <<"\n";
         }
     }
 
