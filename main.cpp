@@ -15,7 +15,22 @@ public:
     int quantidadePontosDeInteresse;
     void imprimirResultado()
     {
+        vector<int> arr(quantidadePontosDeInteresse);
+
         cout << custoTotal << " " << atratividadeAgregada << "\n";
+
+        for (int i = 0; i < resultado.size(); i++)
+        {
+            Trecho trechoAtual = resultado.at(i);
+            arr[trechoAtual.trechoOrigem] += 1;
+            arr[trechoAtual.trechoDestino] += 1;
+        }
+
+        for(int i=0; i< arr.size(); i++){
+            cout << arr[i] << " ";
+        }
+
+        cout << "\n";
 
         for (int i = 0; i < resultado.size(); i++)
         {
