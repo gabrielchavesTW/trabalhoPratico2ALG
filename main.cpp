@@ -1,14 +1,10 @@
 
 #include <iostream>
 #include <vector>
-#include <sstream>
-#include <map>
 #include "estruturas.h"
 #include "entrada.h"
 #include "grafo.h"
 using namespace std;
-
-
 
 class Configuracoes
 {
@@ -58,7 +54,7 @@ public:
     {
         do
         {
-            Trecho trechoAtual = acharMelhorTrechoDisponivel(vetorTrechos, vetorPontosDeInteresse);
+            Trecho trechoAtual = vetorTrechos.at(0);
 
             if (resultado.size() == 0)
             {
@@ -76,29 +72,6 @@ public:
             vetorTrechos = removerTrecho(trechoAtual, vetorTrechos);
 
         } while (vetorTrechos.size() > 0);
-    }
-
-    Trecho acharMelhorTrechoDisponivel(vector<Trecho> vetorTrechos, vector<PontoDeInteresse> vetorPontosDeInteresse)
-    {
-        Trecho melhorTrecho = vetorTrechos.at(0);
-        for (int i = 1; i < vetorTrechos.size(); i++)
-        {
-            Trecho trechoAtual = vetorTrechos.at(i);
-
-            if (trechoAtual.custo < melhorTrecho.custo)
-            {
-                melhorTrecho = trechoAtual;
-            }
-            else if (trechoAtual.custo == melhorTrecho.custo)
-            {
-                if (trechoAtual.atratividadeAgregada > melhorTrecho.atratividadeAgregada)
-                {
-                    melhorTrecho = trechoAtual;
-                }
-            }
-        }
-
-        return melhorTrecho;
     }
 };
 
