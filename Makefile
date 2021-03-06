@@ -39,7 +39,8 @@ $(EXEC): main.cpp
 	$(CC) $(CFLAGS) main.cpp -o $(EXEC)
 
 clean: # remove todos os arquivos temporarios que forem gerados pela compilacao
-	rm -rf foo.o
+	rm -rf tp02
+	rm -rf main
 
 # === OUTROS =====
 # ================
